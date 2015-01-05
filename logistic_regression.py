@@ -66,7 +66,7 @@ plt.plot(loanamt, px)
 '''the plots are not coming out looking like logistic function plots. It could be due to 
 various reasons: (1). f.params[1] and f.params[2] actually should be going with loanamt and fico
 respectively, and not what I've. (2). I'm not sure if f.params[0] is the intercept or not; it 
-could very well be either f.params[1] or f.params[2]. (3). the points -- fico, px or loanamt, px -- does not any functional relationship, that is, they are not functions.'''
+could very well be either f.params[1] or f.params[2]. (3). the points -- fico, px or loanamt, px -- does not have any functional relationship, that is, they are not functions.'''
 
 #amt = 10,000, int_rate < 12, fico = 720
 int_rate = f.params[0] + f.params[1]*720 + f.params[2]*10000
@@ -76,3 +76,38 @@ print(p_x)
 
 '''Thus for the given amount and the fico_score, the probability of obtaining the loan, p_x,
 is about 0.361. Thus, the loan will not be given as it is below the threshhold of 0.7
+
+
+'''I was trying the logistic fit in a different way as shown above. Here is the approach explained in the lesson'''
+X = loansData_clean[ind_vars]
+loanssData_clean['IR_TF'] = loansData_clean['Low Interest']
+y = loansData_clean['IR_TF']
+logit = sm.Logit(y,X)
+result = logit.fit()
+coeff = result.params
+print(coeff)
+
+
+'''Constant Intercept = -60.125045, FICO.Score = 0.087423, Amount.Requested = -0.000174. Thus, the equation is y = -60.125045 + 0.087423*FS -0.000174*AR
+
+
+#the logistic function based on this new model is:  
+int_rate = coeff[0] + coeff[1]*fico + coeff[2]*loanamt
+px=[]
+for j in int_rate:
+	denominator = math.exp(j)
+	p_x = 1/(1+denominator)
+	px.append(p_x)
+print(px)
+plt.plot(fico, px)
+plt.plot(loanamt, px)
+
+
+'''for amount = 10,000 and fico = 720, the p(x) or logisitic function is: '''
+px = 1/(1 + math.exp(coeff[0] + coeff[1]*720 + coeff[2]*10000))
+print (px)
+
+'''the value of px is 0.2536. Thus, loan is not granted since it is less than 0.7'''
+
+
+
